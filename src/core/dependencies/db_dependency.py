@@ -21,16 +21,30 @@ class DBManager:
     def init_db(self):
         with self.get_conn() as conn:
             cursor = conn.cursor()
+            
             cursor.execute('''
-                CREATE TABLE IF NOT EXISTS tasks (
-                    id TEXT PRIMARY KEY,
-                    title TEXT NOT NULL,
-                    description TEXT,
-                    status TEXT NOT NULL,
+                CREATE TABLE IF NOT EXISTS users (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT NOT NULL,
+                    email TEXT UNIQUE NOT NULL,
+                    balance REAL NOT NULL DEFAULT 0,
                     created_at TEXT NOT NULL,
                     updated_at TEXT NOT NULL
                 )
             ''')
+            
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS transfers (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    from_user_id INTEGER NOT NULL,
+                    to_user_id INTEGER NOT NULL,
+                    amount REAL NOT NULL,
+                    created_at TEXT NOT NULL,
+                    FOREIGN KEY (from_user_id) REFERENCES users (id),
+                    FOREIGN KEY (to_user_id) REFERENCES users (id)
+                )
+            ''')
+            
             conn.commit()
 
 db_manager = DBManager(settings.DB_URL)
