@@ -1,6 +1,6 @@
 import datetime
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Body
 from typing import List
 
 from src.core.dependencies.db_dependency import db_manager
@@ -11,7 +11,7 @@ router = APIRouter()
 
 
 @router.post("/users", response_model=UserResponse, status_code=201)
-async def create_user(user_data: UserCreate = Depends(UserCreate)) -> UserResponse:
+async def create_user(user_data: UserCreate = Body(UserCreate)) -> UserResponse:
     now = datetime.datetime.now(datetime.timezone.utc).isoformat()
     
     with db_manager.get_conn() as conn:
@@ -72,7 +72,7 @@ async def get_users() -> List[UserResponse]:
 
 
 @router.post("/transfer", response_model=TransferResponse, status_code=201)
-async def make_transfer(transfer_data: TransferCreate = Depends(TransferCreate)) -> TransferResponse:
+async def make_transfer(transfer_data: TransferCreate = Body(TransferCreate)) -> TransferResponse:
     now = datetime.datetime.now(datetime.timezone.utc).isoformat()
     
     if transfer_data.from_user_id == transfer_data.to_user_id:
